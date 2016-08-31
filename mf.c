@@ -147,13 +147,50 @@ void rule_init(mf_rule* rule)
     rule->action = 0;
 }
 
+void usage() {
+    printf("\nUsage:\n");
+    printf("mf [-a <action>] [-c <protocol>] [-d <rule_number>] [-h] [--in] [-m <src_netmask>]\n");
+    printf("[-n <dest_netmask>] [--out] [-o] [-p <src_port>] [-q <dest_port>] [-s <src_ip>] [-\n");
+    printf("t <dest_ip>]\n\n");
+    printf(" -a <action>\n");
+    printf("       Specify rule action. Only BLOCK or LOG.\n\n");
+    printf(" -c <protocol>\n");
+    printf("       Specify which protocol of packet to operate. 1 means TCP packet, 2 \n");
+    printf("       means UDP packet, and 3 means both.\n\n");
+    printf(" -d <rule_number>\n");
+    printf("       Delete a specified rule. The rule number can get by option [-o].\n\n");
+    printf(" -h\n");
+    printf("       Print usage of mf.\n\n");
+    printf(" --in\n");
+    printf("       Specify the in-packet to operate.\n\n");
+    printf(" -m <src_netmask>\n");
+    printf("       Specify netmask length of src packet to operate. (i.e. 24 means netmask\n");
+    printf("       ff ff ff 00)\n\n");
+    printf(" -n <dest_netmask>\n");
+    printf("       Specify netmask length of dest packet to operate.\n\n");
+    printf(" --out\n");
+    printf("       Specify the out-packet to operate.\n\n");
+    printf(" -o\n");
+    printf("       Print the specified rules.\n\n");
+    printf(" -p <src_port>\n");
+    printf("       Specify port of src packet to operate.\n\n");
+    printf(" -q <dest_port>\n");
+    printf("       Specify port of dest packet to operate.\n\n");
+    printf(" -s <src_ip>\n");
+    printf("       Specify ip of src packet to operate.\n\n");
+    printf(" -t <dest_ip>\n");
+    printf("       Specify ip of dest packet to operate.\n\n");
+    printf("Example: sudo ./mf -a BLOCK --in -t 31.13.87.36 -n 24\n");
+}
+
 int main(int argc, char *const argv[])
 {
     GET_INIT_MF_RULE(rule);
     rule_init(&rule);
 
-    char *short_options = "od:s:m:p:t:n:q:c:a:";
+    char *short_options = "hod:s:m:p:t:n:q:c:a:";
     struct option long_options[] = {
+        {"help", no_argument, NULL, 'h'},
         {"print", no_argument, NULL, 'o'},
         {"delete", required_argument, NULL, 'd'},
         {"srcip", required_argument, NULL, 's'},
@@ -179,6 +216,9 @@ int main(int argc, char *const argv[])
             case 0:
                 /* Flag is automatically set */
                 break;
+            case 'h':
+                usage();
+                exit(EXIT_SUCCESS);
             case 'o':
                 action = 2;
                 break;
