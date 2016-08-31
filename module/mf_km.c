@@ -63,6 +63,9 @@ bool check_ip(unsigned int ip, unsigned int ip_rule, char mask_length)
         printk(KERN_INFO "mask length is illegal\n");
         return false;
     }
+    /* if no mask_length set means just block specify ip */
+    if (mask_length == 0)
+        mask_length = 32;
     for (i=0; i<mask_length; i++) {
         mask |= ((unsigned int)1<<(31-i));
     }
