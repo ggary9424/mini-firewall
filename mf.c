@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,35 +32,19 @@ typedef struct mf_rule_struct {
 
 unsigned int ip_str_to_hl(char *ip_str)
 {
-    /* convert the string to byte array first, e.g.: from "131.132.162.25" to [131][132][162][25] */
-    unsigned char ip_array[4];
-    int i = 0;
+    unsigned int ip_array[4];
     unsigned int ip = 0;
     if (ip_str==NULL) {
         return 0;
     }
-    memset(ip_array, 0, 4);
-    while (ip_str[i]!='.') {
-        ip_array[0] = ip_array[0]*10 + (ip_str[i++]-'0');
+    sscanf(ip_str, "%u.%u.%u.%u", ip_array, ip_array+1, ip_array+2, ip_array+3);
+    for (int i=0; i<4; i++) {
+        assert((ip_array[i] <= 255) && "Wrong ip format");
     }
-    ++i;
-    while (ip_str[i]!='.') {
-        ip_array[1] = ip_array[1]*10 + (ip_str[i++]-'0');
-    }
-    ++i;
-    while (ip_str[i]!='.') {
-        ip_array[2] = ip_array[2]*10 + (ip_str[i++]-'0');
-    }
-    ++i;
-    while (ip_str[i]!='\0') {
-        ip_array[3] = ip_array[3]*10 + (ip_str[i++]-'0');
-    }
-    /* convert from byte array to host long integer format */
     ip = (ip_array[0] << 24);
     ip = (ip | (ip_array[1] << 16));
     ip = (ip | (ip_array[2] << 8));
     ip = (ip | ip_array[3]);
-
     return ip;
 }
 
